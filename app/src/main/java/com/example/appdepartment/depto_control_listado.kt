@@ -1,4 +1,4 @@
-package com.example.proyectoindoor
+package com.example.appdepartment
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,48 +8,47 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import cn.pedant.SweetAlert.SweetAlertDialog
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONArray
 import org.json.JSONObject
 
-class depto_usuario_historial : AppCompatActivity() {
+class depto_control_listado : AppCompatActivity() {
 
     private lateinit var listView: ListView
     private val listaEventos = ArrayList<String>()
     private val listaEventosData = ArrayList<JSONObject>()
-    private var idUsuario: Int = 0
-    private var idDepartamento: Int = 0
+    private var idDeptoAdmin: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_depto_usuario_historial)
+        setContentView(R.layout.activity_depto_control_listado)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Obtener id_usuario e id_departamento de la sesión
+        // Obtener id_departamento de la sesión del admin
         val prefs = getSharedPreferences("session", MODE_PRIVATE)
-        idUsuario = prefs.getInt("id_usuario", 0)
-        idDepartamento = prefs.getInt("id_departamento", 0)
+        idDeptoAdmin = prefs.getInt("id_departamento", 0)
 
         // Referencia al ListView
-        listView = findViewById(R.id.historial_accesos_usu)
+        listView = findViewById(R.id.lsitado_historial_accesos)
 
-        // Cargar historial de eventos del departamento
+        // Cargar historial de eventos
         cargarHistorialEventos()
 
-        // Click en un evento para ver detalles (solo lectura)
+        // Click en un evento para ver detalles y controlar acceso
         listView.setOnItemClickListener { _, _, position, _ ->
             // Verificar que hay datos y no es el mensaje de "No hay eventos"
             if (listaEventosData.isNotEmpty() && position < listaEventosData.size) {
                 val evento = listaEventosData[position]
-
-                val intent = Intent(this, depto_control_listado_acceso_readonly::class.java)
+                
+                val intent = Intent(this, depto_control_listado_acceso::class.java)
                 intent.putExtra("id_evento", evento.optInt("id_evento", 0))
                 intent.putExtra("id_sensor", evento.optInt("id_sensor", 0))
                 intent.putExtra("codigo_sensor", evento.optString("codigo_sensor", "N/A"))
@@ -58,8 +57,8 @@ class depto_usuario_historial : AppCompatActivity() {
                 intent.putExtra("tipo_evento", evento.optString("tipo_evento", ""))
                 intent.putExtra("nombre_usuario", evento.optString("nombre_usuario", "Desconocido"))
                 intent.putExtra("id_usuario", evento.optInt("id_usuario", 0))
-
-                startActivity(intent)
+                
+                startActivityForResult(intent, 600)
             }
         }
     }
@@ -70,22 +69,15 @@ class depto_usuario_historial : AppCompatActivity() {
         cargarHistorialEventos()
     }
 
-    private fun cargarHistorialEventos() {
-        if (idDepartamento == 0) {
-            listaEventos.clear()
-            listaEventosData.clear()
-            listaEventos.add("Error: No se pudo identificar el departamento")
-            val adapter = ArrayAdapter(
-                this,
-                android.R.layout.simple_list_item_1,
-                listaEventos
-            )
-            listView.adapter = adapter
-            return
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 600 && resultCode == RESULT_OK) {
+            cargarHistorialEventos()
         }
+    }
 
-        // Usar el mismo endpoint que el admin para listar eventos del departamento
-        val url = "http://54.89.22.17/listar_eventos.php?id_departamento=$idDepartamento"
+    private fun cargarHistorialEventos() {
+        val url = "http://54.89.22.17/listar_eventos.php?id_departamento=$idDeptoAdmin"
 
         val request = StringRequest(
             Request.Method.GET,
@@ -111,16 +103,16 @@ class depto_usuario_historial : AppCompatActivity() {
 
                         listaEventos.add(
                             "$resultadoIcon $tipoEvento\n" +
-                            "📅 $fechaHora\n" +
-                            "🔑 Sensor: $codigoSensor\n" +
-                            "👤 Usuario: $nombreUsuario"
+                            " $fechaHora\n" +
+                            " Sensor: $codigoSensor\n" +
+                            " Usuario: $nombreUsuario"
                         )
-
+                        
                         listaEventosData.add(obj)
                     }
 
                     if (listaEventos.isEmpty()) {
-                        listaEventos.add("No hay eventos registrados en el departamento")
+                        listaEventos.add("No hay eventos registrados en tu departamento")
                     }
 
                     val adapter = ArrayAdapter(
@@ -134,7 +126,7 @@ class depto_usuario_historial : AppCompatActivity() {
                     e.printStackTrace()
                     listaEventos.clear()
                     listaEventosData.clear()
-                    listaEventos.add("Error al procesar los datos")
+                    listaEventos.add("Error al cargar eventos")
                     val adapter = ArrayAdapter(
                         this,
                         android.R.layout.simple_list_item_1,

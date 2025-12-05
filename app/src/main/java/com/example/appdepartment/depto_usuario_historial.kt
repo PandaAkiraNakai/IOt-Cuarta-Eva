@@ -1,4 +1,4 @@
-package com.example.proyectoindoor
+package com.example.appdepartment
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,47 +8,48 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import cn.pedant.SweetAlert.SweetAlertDialog
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONArray
 import org.json.JSONObject
 
-class depto_control_listado : AppCompatActivity() {
+class depto_usuario_historial : AppCompatActivity() {
 
     private lateinit var listView: ListView
     private val listaEventos = ArrayList<String>()
     private val listaEventosData = ArrayList<JSONObject>()
-    private var idDeptoAdmin: Int = 0
+    private var idUsuario: Int = 0
+    private var idDepartamento: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_depto_control_listado)
+        setContentView(R.layout.activity_depto_usuario_historial)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        // Obtener id_departamento de la sesión del admin
+        // Obtener id_usuario e id_departamento de la sesión
         val prefs = getSharedPreferences("session", MODE_PRIVATE)
-        idDeptoAdmin = prefs.getInt("id_departamento", 0)
+        idUsuario = prefs.getInt("id_usuario", 0)
+        idDepartamento = prefs.getInt("id_departamento", 0)
 
         // Referencia al ListView
-        listView = findViewById(R.id.lsitado_historial_accesos)
+        listView = findViewById(R.id.historial_accesos_usu)
 
-        // Cargar historial de eventos
+        // Cargar historial de eventos del departamento
         cargarHistorialEventos()
 
-        // Click en un evento para ver detalles y controlar acceso
+        // Click en un evento para ver detalles (solo lectura)
         listView.setOnItemClickListener { _, _, position, _ ->
             // Verificar que hay datos y no es el mensaje de "No hay eventos"
             if (listaEventosData.isNotEmpty() && position < listaEventosData.size) {
                 val evento = listaEventosData[position]
-                
-                val intent = Intent(this, depto_control_listado_acceso::class.java)
+
+                val intent = Intent(this, depto_control_listado_acceso_readonly::class.java)
                 intent.putExtra("id_evento", evento.optInt("id_evento", 0))
                 intent.putExtra("id_sensor", evento.optInt("id_sensor", 0))
                 intent.putExtra("codigo_sensor", evento.optString("codigo_sensor", "N/A"))
@@ -57,8 +58,8 @@ class depto_control_listado : AppCompatActivity() {
                 intent.putExtra("tipo_evento", evento.optString("tipo_evento", ""))
                 intent.putExtra("nombre_usuario", evento.optString("nombre_usuario", "Desconocido"))
                 intent.putExtra("id_usuario", evento.optInt("id_usuario", 0))
-                
-                startActivityForResult(intent, 600)
+
+                startActivity(intent)
             }
         }
     }
@@ -69,15 +70,22 @@ class depto_control_listado : AppCompatActivity() {
         cargarHistorialEventos()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 600 && resultCode == RESULT_OK) {
-            cargarHistorialEventos()
-        }
-    }
-
     private fun cargarHistorialEventos() {
-        val url = "http://54.89.22.17/listar_eventos.php?id_departamento=$idDeptoAdmin"
+        if (idDepartamento == 0) {
+            listaEventos.clear()
+            listaEventosData.clear()
+            listaEventos.add("Error: No se pudo identificar el departamento")
+            val adapter = ArrayAdapter(
+                this,
+                android.R.layout.simple_list_item_1,
+                listaEventos
+            )
+            listView.adapter = adapter
+            return
+        }
+
+        // Usar el mismo endpoint que el admin para listar eventos del departamento
+        val url = "http://54.89.22.17/listar_eventos.php?id_departamento=$idDepartamento"
 
         val request = StringRequest(
             Request.Method.GET,
@@ -103,16 +111,16 @@ class depto_control_listado : AppCompatActivity() {
 
                         listaEventos.add(
                             "$resultadoIcon $tipoEvento\n" +
-                            " $fechaHora\n" +
-                            " Sensor: $codigoSensor\n" +
-                            " Usuario: $nombreUsuario"
+                            "📅 $fechaHora\n" +
+                            "🔑 Sensor: $codigoSensor\n" +
+                            "👤 Usuario: $nombreUsuario"
                         )
-                        
+
                         listaEventosData.add(obj)
                     }
 
                     if (listaEventos.isEmpty()) {
-                        listaEventos.add("No hay eventos registrados en tu departamento")
+                        listaEventos.add("No hay eventos registrados en el departamento")
                     }
 
                     val adapter = ArrayAdapter(
@@ -126,7 +134,7 @@ class depto_control_listado : AppCompatActivity() {
                     e.printStackTrace()
                     listaEventos.clear()
                     listaEventosData.clear()
-                    listaEventos.add("Error al cargar eventos")
+                    listaEventos.add("Error al procesar los datos")
                     val adapter = ArrayAdapter(
                         this,
                         android.R.layout.simple_list_item_1,

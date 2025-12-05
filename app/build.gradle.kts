@@ -4,15 +4,15 @@ plugins {
 }
 
 android {
-    namespace = "com.example.proyectoindoor"
+    namespace = "com.example.appdepartment"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.proyectoindoor"
+        applicationId = "com.example.appdepartment"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = "6.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

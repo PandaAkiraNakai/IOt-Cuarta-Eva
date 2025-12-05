@@ -1,4 +1,4 @@
-package com.example.proyectoindoor
+package com.example.appdepartment
 
 import org.junit.Test
 
