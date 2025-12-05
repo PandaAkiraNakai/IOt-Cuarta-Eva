@@ -1,6 +1,9 @@
 package com.example.appdepartment
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.ListView
@@ -22,6 +25,21 @@ class depto_control_listado : AppCompatActivity() {
     private val listaEventosData = ArrayList<JSONObject>()
     private var idDeptoAdmin: Int = 0
 
+    // Receiver para recargar cuando se registre un evento en el departamento
+    private val eventoReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            try {
+                val idDepto = intent?.getIntExtra("id_departamento", 0) ?: 0
+                println("🔔 Broadcast recibido en depto_control_listado: id_departamento=$idDepto")
+                if (idDepto != 0 && idDepto == idDeptoAdmin) {
+                    cargarHistorialEventos()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -32,9 +50,19 @@ class depto_control_listado : AppCompatActivity() {
             insets
         }
 
-        // Obtener id_departamento de la sesión del admin
+        // Obtener id_departamento y rol de la sesión
         val prefs = getSharedPreferences("session", MODE_PRIVATE)
         idDeptoAdmin = prefs.getInt("id_departamento", 0)
+        val rol = prefs.getString("rol", "") ?: ""
+
+        // Si el usuario NO es admin, redirigir al historial del usuario (solo su departamento)
+        if (rol != "ADMIN") {
+            // Evitar que un operador vea el listado admin de todos los departamentos
+            val intentRedirect = Intent(this, depto_usuario_historial::class.java)
+            startActivity(intentRedirect)
+            finish()
+            return
+        }
 
         // Referencia al ListView
         listView = findViewById(R.id.lsitado_historial_accesos)
@@ -47,7 +75,7 @@ class depto_control_listado : AppCompatActivity() {
             // Verificar que hay datos y no es el mensaje de "No hay eventos"
             if (listaEventosData.isNotEmpty() && position < listaEventosData.size) {
                 val evento = listaEventosData[position]
-                
+
                 val intent = Intent(this, depto_control_listado_acceso::class.java)
                 intent.putExtra("id_evento", evento.optInt("id_evento", 0))
                 intent.putExtra("id_sensor", evento.optInt("id_sensor", 0))
@@ -57,7 +85,7 @@ class depto_control_listado : AppCompatActivity() {
                 intent.putExtra("tipo_evento", evento.optString("tipo_evento", ""))
                 intent.putExtra("nombre_usuario", evento.optString("nombre_usuario", "Desconocido"))
                 intent.putExtra("id_usuario", evento.optInt("id_usuario", 0))
-                
+
                 startActivityForResult(intent, 600)
             }
         }
@@ -65,8 +93,19 @@ class depto_control_listado : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        // Registrar receiver para actualizaciones en tiempo real
+        try {
+            registerReceiver(eventoReceiver, IntentFilter("com.example.appdepartment.EVENTO_REGISTRADO"))
+        } catch (e: Exception) { }
         // Recargar eventos cada vez que la pantalla vuelve a ser visible
         cargarHistorialEventos()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        try {
+            unregisterReceiver(eventoReceiver)
+        } catch (e: Exception) { }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -98,7 +137,7 @@ class depto_control_listado : AppCompatActivity() {
                         val codigoSensor = if (obj.isNull("codigo_sensor")) "N/A" else obj.optString("codigo_sensor", "N/A")
                         val nombreUsuario = if (obj.isNull("nombre_usuario")) "Desconocido" else obj.optString("nombre_usuario", "Desconocido")
 
-                        // Formatear el resultado con emoji
+                        // Formatear el resultado with emoji
                         val resultadoIcon = if (resultado == "PERMITIDO") "✅" else "❌"
 
                         listaEventos.add(
@@ -107,7 +146,7 @@ class depto_control_listado : AppCompatActivity() {
                             " Sensor: $codigoSensor\n" +
                             " Usuario: $nombreUsuario"
                         )
-                        
+
                         listaEventosData.add(obj)
                     }
 
@@ -149,6 +188,10 @@ class depto_control_listado : AppCompatActivity() {
             }
         )
 
+        // Deshabilitar caché para asegurar datos frescos
+        request.setShouldCache(false)
+
         Volley.newRequestQueue(this).add(request)
     }
 }
+

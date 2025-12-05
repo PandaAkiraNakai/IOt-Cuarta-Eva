@@ -1,6 +1,9 @@
 package com.example.appdepartment
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.ListView
@@ -22,6 +25,29 @@ class depto_usuario_historial : AppCompatActivity() {
     private var idUsuario: Int = 0
     private var idDepartamento: Int = 0
 
+    // Receiver para recargar cuando se registre un evento
+    private val eventoReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            try {
+                val idUsr = intent?.getIntExtra("id_usuario", 0) ?: 0
+                println("🔔 Broadcast recibido en depto_usuario_historial: id_usuario=$idUsr (mi id=$idUsuario)")
+
+                // Si el broadcast corresponde a este usuario, recargar
+                // CAMBIO: También recargar si id_usuario del broadcast es 0 o null (eventos sin usuario específico)
+                if (idUsr == idUsuario || idUsr == 0) {
+                    println("✅ Recargando historial porque el evento me corresponde")
+                    android.widget.Toast.makeText(context, "🔄 Nuevo evento detectado, recargando...", android.widget.Toast.LENGTH_SHORT).show()
+                    cargarHistorialEventos()
+                } else {
+                    println("⏭️ Ignorando broadcast, no es para mi usuario (recibido=$idUsr, mio=$idUsuario)")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                println("❌ Error en eventoReceiver: ${e.message}")
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -40,7 +66,7 @@ class depto_usuario_historial : AppCompatActivity() {
         // Referencia al ListView
         listView = findViewById(R.id.historial_accesos_usu)
 
-        // Cargar historial de eventos del departamento
+        // Cargar historial de eventos del usuario
         cargarHistorialEventos()
 
         // Click en un evento para ver detalles (solo lectura)
@@ -66,15 +92,27 @@ class depto_usuario_historial : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        // Registrar receiver para actualizaciones en tiempo real
+        try {
+            registerReceiver(eventoReceiver, IntentFilter("com.example.appdepartment.EVENTO_REGISTRADO"))
+        } catch (e: Exception) { }
         // Recargar eventos cada vez que la pantalla vuelve a ser visible
         cargarHistorialEventos()
     }
 
+    override fun onPause() {
+        super.onPause()
+        try {
+            unregisterReceiver(eventoReceiver)
+        } catch (e: Exception) { }
+    }
+
     private fun cargarHistorialEventos() {
-        if (idDepartamento == 0) {
+        // Validar que tengamos id de usuario en sesión
+        if (idUsuario == 0) {
             listaEventos.clear()
             listaEventosData.clear()
-            listaEventos.add("Error: No se pudo identificar el departamento")
+            listaEventos.add("Error: No se pudo identificar tu usuario en la sesión")
             val adapter = ArrayAdapter(
                 this,
                 android.R.layout.simple_list_item_1,
@@ -84,15 +122,24 @@ class depto_usuario_historial : AppCompatActivity() {
             return
         }
 
-        // Usar el mismo endpoint que el admin para listar eventos del departamento
-        val url = "http://54.89.22.17/listar_eventos.php?id_departamento=$idDepartamento"
+        // Endpoint específico para eventos por usuario
+        val url = "http://54.89.22.17/listar_eventos_usuario.php?id_usuario=$idUsuario"
+
+        println("🔄 Cargando historial para id_usuario=$idUsuario")
+        println("🌐 URL: $url")
 
         val request = StringRequest(
             Request.Method.GET,
             url,
             { response ->
                 try {
+                    println("📥 listar_eventos_usuario - respuesta RAW (primeros 500 chars): ${response.take(500)}")
+
                     val jsonArray = JSONArray(response)
+                    val totalEventos = jsonArray.length()
+
+                    println("📊 Total de eventos recibidos: $totalEventos")
+                    android.widget.Toast.makeText(this, "Cargando $totalEventos evento(s)...", android.widget.Toast.LENGTH_SHORT).show()
 
                     listaEventos.clear()
                     listaEventosData.clear()
@@ -106,7 +153,7 @@ class depto_usuario_historial : AppCompatActivity() {
                         val codigoSensor = if (obj.isNull("codigo_sensor")) "N/A" else obj.optString("codigo_sensor", "N/A")
                         val nombreUsuario = if (obj.isNull("nombre_usuario")) "Desconocido" else obj.optString("nombre_usuario", "Desconocido")
 
-                        // Formatear el resultado con emoji
+                        // Formatear el resultado with emoji
                         val resultadoIcon = if (resultado == "PERMITIDO") "✅" else "❌"
 
                         listaEventos.add(
@@ -120,7 +167,7 @@ class depto_usuario_historial : AppCompatActivity() {
                     }
 
                     if (listaEventos.isEmpty()) {
-                        listaEventos.add("No hay eventos registrados en el departamento")
+                        listaEventos.add("No hay eventos registrados para tu usuario")
                     }
 
                     val adapter = ArrayAdapter(
@@ -132,6 +179,7 @@ class depto_usuario_historial : AppCompatActivity() {
                     listView.adapter = adapter
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    println("❌ Error al parsear listar_eventos_usuario: ${e.message}")
                     listaEventos.clear()
                     listaEventosData.clear()
                     listaEventos.add("Error al procesar los datos")
@@ -145,6 +193,7 @@ class depto_usuario_historial : AppCompatActivity() {
             },
             { error ->
                 error.printStackTrace()
+                println("❌ Error de conexión listar_eventos_usuario: ${error.message}")
                 listaEventos.clear()
                 listaEventosData.clear()
                 listaEventos.add("Error de conexión con el servidor")
@@ -156,6 +205,9 @@ class depto_usuario_historial : AppCompatActivity() {
                 listView.adapter = adapter
             }
         )
+
+        // Deshabilitar caché para asegurar datos frescos
+        request.setShouldCache(false)
 
         Volley.newRequestQueue(this).add(request)
     }
