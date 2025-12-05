@@ -23,7 +23,8 @@ class depto_gestion_adm : AppCompatActivity() {
         // === REFERENCIAS A BOTONES ===
         val btnCrudSensores = findViewById<Button>(R.id.btn_Crudrfid)
         val btnCrudUsuarios = findViewById<Button>(R.id.btn_CrudUsuariosiot)
-        val btnAccesoManual = findViewById<Button>(R.id.btn_historial_accesos) // Agregué la referencia al 3er botón por si lo usas
+        val btnAccesoManual = findViewById<Button>(R.id.btn_historial_accesos)
+        val btnCerrarSesion = findViewById<Button>(R.id.btn_cerrar_sesion)
 
 
         btnCrudSensores.setOnClickListener {
@@ -43,5 +44,24 @@ class depto_gestion_adm : AppCompatActivity() {
             val intent = Intent(this, depto_control_listado::class.java)
             startActivity(intent)
         }
+
+        // === EVENTO: CERRAR SESIÓN ===
+        btnCerrarSesion.setOnClickListener {
+            cerrarSesion()
+        }
+    }
+
+    private fun cerrarSesion() {
+        // Limpiar SharedPreferences
+        val prefs = getSharedPreferences("session", MODE_PRIVATE)
+        val editor = prefs.edit()
+        editor.clear()
+        editor.apply()
+
+        // Redirigir al login
+        val intent = Intent(this, depto_login::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 }

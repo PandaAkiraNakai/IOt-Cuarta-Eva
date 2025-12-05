@@ -4,13 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import cn.pedant.SweetAlert.SweetAlertDialog
-import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONObject
@@ -24,6 +22,12 @@ class depto_login : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Verificar si ya hay sesión activa
+        if (verificarSesionActiva()) {
+            return // Ya se redirigió al usuario
+        }
+
         enableEdgeToEdge()
         setContentView(R.layout.activity_depto_login)
 
@@ -40,6 +44,27 @@ class depto_login : AppCompatActivity() {
         btnLogin.setOnClickListener {
             validarYLogin()
         }
+    }
+
+    private fun verificarSesionActiva(): Boolean {
+        val prefs = getSharedPreferences("session", MODE_PRIVATE)
+        val idUsuario = prefs.getInt("id_usuario", 0)
+        val rol = prefs.getString("rol", "")
+
+        if (idUsuario != 0 && !rol.isNullOrEmpty()) {
+            // Hay sesión activa, redirigir según el rol
+            if (rol == "ADMIN") {
+                val intent = Intent(this, depto_gestion_adm::class.java)
+                startActivity(intent)
+                finish()
+            } else {
+                val intent = Intent(this, depto_usuario_bienvenida::class.java)
+                startActivity(intent)
+                finish()
+            }
+            return true
+        }
+        return false
     }
 
     private fun validarYLogin() {

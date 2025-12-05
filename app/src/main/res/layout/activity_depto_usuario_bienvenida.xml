@@ -91,10 +91,32 @@
                 app:iconPadding="16dp"
                 app:iconSize="32dp"
                 app:iconTint="@color/button_text_dark"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btn_llavero_usu" />
+
+            <Button
+                android:id="@+id/btn_cerrar_sesion_usu"
+                android:layout_width="0dp"
+                android:layout_height="75dp"
+                android:layout_marginTop="32dp"
+                android:backgroundTint="@color/error"
+                android:elevation="8dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="Cerrar Sesión"
+                android:textColor="@color/button_text"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:cornerRadius="18dp"
+                app:icon="@drawable/login_icon"
+                app:iconGravity="textStart"
+                app:iconPadding="16dp"
+                app:iconSize="28dp"
+                app:iconTint="@color/button_text"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btn_historial_usu1" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

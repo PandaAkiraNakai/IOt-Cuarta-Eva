@@ -32,5 +32,25 @@ class depto_usuario_bienvenida : AppCompatActivity() {
             val intent = Intent(this, depto_usuario_historial::class.java)
             startActivity(intent)
         }
+
+        // Botón Cerrar Sesión
+        val btnCerrarSesion = findViewById<Button>(R.id.btn_cerrar_sesion_usu)
+        btnCerrarSesion.setOnClickListener {
+            cerrarSesion()
+        }
+    }
+
+    private fun cerrarSesion() {
+        // Limpiar SharedPreferences
+        val prefs = getSharedPreferences("session", MODE_PRIVATE)
+        val editor = prefs.edit()
+        editor.clear()
+        editor.apply()
+
+        // Redirigir al login
+        val intent = Intent(this, depto_login::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
     }
 }

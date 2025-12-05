@@ -49,7 +49,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="388dp"
             android:padding="32dp">
 
             <Button
@@ -69,6 +69,7 @@
                 app:iconSize="32dp"
                 app:iconTint="@color/button_text"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -76,7 +77,6 @@
                 android:id="@+id/btn_CrudUsuariosiot"
                 android:layout_width="0dp"
                 android:layout_height="80dp"
-                android:layout_marginTop="24dp"
                 android:backgroundTint="@color/success"
                 android:elevation="6dp"
                 android:fontFamily="sans-serif-medium"
@@ -90,14 +90,14 @@
                 app:iconSize="32dp"
                 app:iconTint="@color/button_text"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/btn_Crudrfid" />
+                app:layout_constraintTop_toBottomOf="@+id/btn_Crudrfid" />
 
             <Button
                 android:id="@+id/btn_historial_accesos"
                 android:layout_width="0dp"
                 android:layout_height="80dp"
-                android:layout_marginTop="24dp"
                 android:backgroundTint="@color/warning"
                 android:elevation="6dp"
                 android:fontFamily="sans-serif-medium"
@@ -110,10 +110,33 @@
                 app:iconPadding="16dp"
                 app:iconSize="32dp"
                 app:iconTint="@color/button_text_dark"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btn_CrudUsuariosiot" />
+
+            <Button
+                android:id="@+id/btn_cerrar_sesion"
+                android:layout_width="0dp"
+                android:layout_height="70dp"
+                android:backgroundTint="@color/error"
+                android:elevation="6dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="Cerrar Sesión"
+                android:textColor="@color/button_text"
+                android:textSize="18sp"
+                app:cornerRadius="16dp"
+                app:icon="@drawable/login_icon"
+                app:iconGravity="textStart"
+                app:iconPadding="16dp"
+                app:iconSize="28dp"
+                app:iconTint="@color/button_text"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/btn_CrudUsuariosiot" />
+                app:layout_constraintTop_toBottomOf="@+id/btn_historial_accesos"
+                app:layout_constraintVertical_bias="0.567" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
