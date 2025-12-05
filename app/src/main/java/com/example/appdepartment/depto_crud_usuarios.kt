@@ -66,6 +66,8 @@ class depto_crud_usuarios : AppCompatActivity() {
             intent.putExtra("email", usuario["email"] as String)
             intent.putExtra("rol", usuario["rol"] as String)
             intent.putExtra("estado", usuario["estado"] as String)
+            intent.putExtra("rut", usuario["rut"] as String)
+            intent.putExtra("telefono", usuario["telefono"] as String)
             intent.putExtra("id_departamento", idDepartamento)
             startActivity(intent)
         }
@@ -81,11 +83,15 @@ class depto_crud_usuarios : AppCompatActivity() {
         // Agregar parámetro para solicitar TODOS los usuarios, sin filtrar por estado
         val url = "http://54.89.22.17/listar_usuarios_depto.php?id_departamento=$idDepartamento&todos=1"
 
+        // Log para depuración
+        println("📡 Cargando usuarios desde: $url")
+
         val request = StringRequest(
             Request.Method.GET,
             url,
             { response ->
                 try {
+                    println("📥 Respuesta del servidor: $response")
 
                     val jsonArray = JSONArray(response)
 
@@ -100,6 +106,8 @@ class depto_crud_usuarios : AppCompatActivity() {
                         val email = obj.getString("email")
                         val rol = obj.getString("rol")
                         val estado = obj.optString("estado", "ACTIVO")
+                        val rut = obj.optString("rut", "")
+                        val telefono = obj.optString("telefono", "")
 
                         listaUsuariosIds.add(idUsuario)
 
@@ -117,7 +125,9 @@ class depto_crud_usuarios : AppCompatActivity() {
                             "nombre" to nombre,
                             "email" to email,
                             "rol" to rol,
-                            "estado" to estado
+                            "estado" to estado,
+                            "rut" to rut,
+                            "telefono" to telefono
                         )
                         listaUsuariosCompletos.add(usuarioMap)
                     }
@@ -125,6 +135,8 @@ class depto_crud_usuarios : AppCompatActivity() {
                     if (listaUsuariosNombres.isEmpty()) {
                         listaUsuariosNombres.add("No hay usuarios en este departamento")
                     }
+
+                    println("✅ Usuarios cargados: ${listaUsuariosCompletos.size}")
 
                     val adapter = ArrayAdapter(
                         this,
@@ -135,10 +147,12 @@ class depto_crud_usuarios : AppCompatActivity() {
 
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    println("❌ Error al procesar usuarios: ${e.message}")
                     Toast.makeText(this, "Error al cargar usuarios: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             },
             { error ->
+                println("❌ Error de conexión: ${error.message}")
                 Toast.makeText(this, "Error de conexión: ${error.message}", Toast.LENGTH_LONG).show()
             }
         )

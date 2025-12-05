@@ -1,81 +1,131 @@
-# AppDepartment — Módulos Depto
+# AppDepartment — Módulos Depto (v6.9)
 
-![Project Logo](app/src/main/res/mipmap/ic_launcher.png)
+![AppDepartment](app/src/main/res/mipmap/ic_launcher.png)
 
 [![Build](https://img.shields.io/badge/build-gradle-brightgreen)](https://gradle.org) [![Kotlin](https://img.shields.io/badge/kotlin-2.0.21-blue)](https://kotlinlang.org) [![Android SDK](https://img.shields.io/badge/Android%20SDK-36-yellow)]() [![Version](https://img.shields.io/badge/version-6.9-blue)]() [![Status](https://img.shields.io/badge/status-development-orange)]
 
 ---
 
-## Índice
+## Resumen rápido
 
-- [Descripción breve](#descripción-breve)
-- [Alcance](#alcance)
-- [Funcionalidades principales](#funcionalidades-principales)
-- [Mapeo de pantallas](#mapeo-de-pantallas)
-- [Dependencias principales](#dependencias-principales)
-- [Endpoints detectados](#endpoints-detectados)
-- [Requisitos y configuración](#requisitos-y-configuración)
-- [Cómo compilar y ejecutar (rápido)](#cómo-compilar-y-ejecutar-rápido)
-- [Notas de seguridad y recomendaciones](#notas-de-seguridad-y-recomendaciones)
-- [Estructura de archivos (rutas clave)](#estructura-de-archivos-rutas-clave)
-- [Próximos pasos sugeridos](#próximos-pasos-sugeridos)
+- **Nombre:** AppDepartment
+- **Versión:** 6.9
+- **Alcance de este README:** documentación enfocada exclusivamente en los módulos cuyo nombre comienza con `depto` (actividades, layouts y lógica servidor/cliente relacionados con gestión de departamentos, sensores y usuarios).
+- **Autor:** GitHub Copilot
+- **Licencia:** MIT
 
 ---
 
-## Descripción breve
+## Índice
 
-Esta aplicación Android (Kotlin) contiene módulos para la gestión de departamentos, sensores y usuarios. Este README describe únicamente los archivos cuyo nombre comienza por `depto` (actividades y layouts relevantes para administración y operación).
+- [Descripción](#descripción)
+- [Alcance y convenciones](#alcance-y-convenciones)
+- [Funcionalidades clave (depto)](#funcionalidades-clave-depto)
+- [Pantallas / Activities importantes](#pantallas--activities-importantes)
+- [Endpoints API usados por `depto*`](#endpoints-api-usados-por-depto)
+- [Cómo compilar / instalar (rápido)](#cómo-compilar--instalar-rápido)
+- [Requisitos del servidor y notas](#requisitos-del-servidor-y-notas)
+- [Comportamientos y limitaciones conocidas](#comportamientos-y-limitaciones-conocidas)
+- [Contacto / Créditos](#contacto--créditos)
+- [Licencia](#licencia)
 
+---
 
-## Alcance
+## Descripción
 
-Documentamos las actividades `depto*` y sus layouts asociados: autenticación, CRUD de sensores, CRUD de usuarios, listados y paneles de administración. Se excluye código antiguo o no relacionado con `depto`.
-
-
-## Funcionalidades principales
-
-- Login por email/contraseña con redirección según rol (ADMIN / OPERADOR).
-- Panel administrativo para gestionar sensores y usuarios.
-- Registro, edición y eliminación de sensores (asociados a departamentos y usuarios).
-- Creación de usuarios con validaciones (RUT chileno, formato de teléfono, contraseña segura).
-- Listados con búsqueda y selección para ver/editar detalles.
-- Historial de accesos por usuario.
-
-
-## Mapeo de pantallas
-
-Listado principal de Activities (ruta: `app/src/main/java/com/example/appdepartment`):
-
-- `depto_login.kt` — Login; guarda sesión en `SharedPreferences`.
-- `depto_gestion_adm.kt` — Menú admin (acceso a CRUD sensores/usuarios y listados).
-- `depto_crud_sensores.kt` — Menú de sensores (Registrar / Modificar estados).
-- `depto_crud_sensores_registro.kt` — Registro de sensor (formulario + POST).
-- `depto_crud_sensores_estado.kt` — Lista de sensores por departamento.
-- `depto_crud_sensores_estado_modificar.kt` — Editar / eliminar sensor (POST).
-- `depto_crud_usuarios.kt` — Entrada al flujo de usuarios.
-- `depto_crud_usuarios_crear.kt` — Crear usuario (validaciones + POST).
-- `depto_crud_usuarios_modificar.kt`, `depto_usuarios_modificar_usu.kt` — Plantillas/edición.
-- `depto_control_listado.kt`, `depto_control_listado_acceso.kt` — Listados y controles de acceso.
-- `depto_usuario_bienvenida.kt` — Bienvenida para operadores.
-- `depto_usuario_historial.kt` — Historial de accesos.
-
-Cada Activity tiene su layout en `app/src/main/res/layout/activity_depto_*.xml`.
+AppDepartment agrupa los módulos Android (Kotlin) para gestionar departamentos, sensores y usuarios dentro de la app. Este README documenta únicamente los ficheros `depto*` (cliente Android) y los endpoints PHP relevantes que la app consume.
 
 
-## Dependencias principales
+## Alcance y convenciones
 
-Extraídas de `app/build.gradle.kts` y uso en código `depto*`:
+- Solo se documentan archivos y pantallas cuyo nombre inicia con `depto`.
+- Rutas clave del cliente: `app/src/main/java/com/example/appdepartment/` y `app/src/main/res/layout/`.
+- Las URLs del servidor aparecen en el código (por ejemplo `http://54.89.22.17/...`). Asegúrate de actualizar las IP/host si cambias entorno.
 
-- `com.android.volley:volley:1.2.1` — comunicación HTTP/REST.
-- `com.github.f0ris.sweetalert:library:1.6.2` — diálogos tipo SweetAlert.
-- `com.airbnb.android:lottie:6.7.0` — animaciones Lottie (presente en build.gradle).
-- AndroidX (core-ktx, appcompat, material, activity, constraintlayout, cardview).
 
-✍️ Autores / Créditos
+## Funcionalidades clave (depto)
 
-- Sergio Cubelli (Sergio el Nazer)
-- Victor Manzano (Victor el Nazi)
+- Autenticación (login) con persistencia de sesión en `SharedPreferences`.
+- Roles: `ADMIN` y `OPERADOR` con vistas y permisos diferenciados.
+  - El admin puede crear/editar/eliminar usuarios, gestionar sensores y ver listados.
+  - El operador puede ver listados, ver historial de accesos y acciones de lectura (no edición).
+- CRUD de usuarios con validaciones:
+  - Validación de RUT chileno (DV), formato de teléfono Chile (+569...), validación básica de email.
+  - Al crear: el usuario se registra con estado `ACTIVO` por defecto.
+  - Al modificar (admin): puede editar nombre, RUT, email, teléfono, contraseña (opcional), rol, departamento y estado.
+  - El admin puede eliminar usuarios (botón seguro con confirmación).
+- CRUD de sensores (asociados a departamentos): registro, edición y cambiar estado (activar/desactivar).
+  - Nota: por diseño el admin sólo puede activar/desactivar sensores y, opcionalmente, administrar usuarios del departamento.
+- Historial de accesos: admin puede ver y gestionar; operador puede ver solo en modo lectura.
 
-📄 Licencia
 
-Este proyecto está bajo la Licencia MIT. Consulta el archivo LICENSE para más detalles.
+## Pantallas / Activities importantes (ruta: `app/src/main/java/com/example/appdepartment`)
+
+- `depto_login.kt` — Login y gestión de sesión.
+- `depto_gestion_adm.kt` — Menú principal del admin.
+- `depto_usuario_bienvenida.kt` — Home del operador.
+- `depto_crud_usuarios.kt` — Lista y navegación hacia crear/editar usuarios.
+- `depto_crud_usuarios_crear.kt` — Formulario y validaciones para crear usuario.
+- `depto_crud_usuarios_modificar.kt` — Formulario completo para editar usuario (admin): ahora carga RUT y teléfono automáticamente y permite eliminar usuario.
+- `depto_crud_sensores_*` — Varios ficheros para CRUD de sensores (registro, listar por departamento, modificar estado).
+- `depto_control_listado*.kt` — Listados y controles de acceso; incluye variante readonly para operadores.
+
+
+## Endpoints API usados por `depto*`
+
+A continuación los endpoints que la app `depto*` espera en el servidor (ejemplo base: `http://54.89.22.17/`):
+
+- `listar_departamentos.php` — Devuelve departamentos (id, numero, torre).
+- `listar_usuarios_depto.php?id_departamento=...` — Debe devolver lista de usuarios del departamento **incluyendo** `id_usuario, nombre, rut, email, telefono, rol, estado`.
+- `crear_usuario.php` — POST para crear usuario (espera nombre, rut, email, telefono, password, rol, id_departamento, estado opcional).
+- `obtener_usuario.php?id_usuario=...` — (opcional) devuelve datos completos de un usuario; la app ahora recibe rut/telefono directamente desde la lista para evitar peticiones extras.
+- `actualizar_estado_usuario.php` — POST para actualizar estado (y, en la versión actualizada, también acepta actualizar todos los campos del usuario si se envían).
+- `eliminar_usuario.php` — POST para eliminar usuario (se soporta DELETE físico; se recomienda considerar soft-delete con `estado='ELIMINADO'` si se quiere mantener historial).
+
+Recomendación: los endpoints deben usar prepared statements (o un framework con ORM) y devolver JSON consistente con campos `error` o `success` para un parsing sencillo en la app.
+
+
+## Cómo compilar / instalar (rápido)
+
+1. Preparar SDK/Android Studio con SDK que la app requiere.
+2. Desde el root del proyecto ejecutar (Linux/macOS):
+
+   ```bash
+   ./gradlew assembleDebug
+   # o para instalar en dispositivo/emulador conectado:
+   ./gradlew installDebug
+   ```
+
+3. Si instalas en un dispositivo real, habilita `USB debugging` y acepta el permiso.
+
+
+## Requisitos del servidor y notas
+
+- Base de datos MySQL/MariaDB `MovilesIOT` (ejemplo). Tabla `usuarios` con columnas mínimas: `id_usuario, nombre, rut, email, telefono, password, rol, estado, id_departamento, fecha_baja`.
+- Archivos PHP deben estar en el servidor y devolver JSON correctamente formado y con encabezado `Content-Type: application/json; charset=utf-8`.
+- Para depuración de errores 500, activa log de errores PHP o añade `error_reporting(E_ALL); ini_set('display_errors', 1);` temporalmente en los endpoints de pruebas.
+
+
+## Comportamientos y limitaciones conocidas
+
+- Al crear un usuario la app ahora cierra la pantalla de creación y la lista se recarga en `onResume()`; si no se ven cambios, comprobar la respuesta de `listar_usuarios_depto.php` y cache de Volley.
+- El formulario de modificación pre-carga `rut` y `telefono` desde la lista para evitar peticiones adicionales.
+- El admin puede eliminar usuarios — la app envía `id_usuario` a `eliminar_usuario.php`. Si recibes error 500, revisa logs del servidor y la implementación del endpoint (ver ejemplo en la carpeta docs).
+- Recursos gráficos: algunos layouts utilizan drawables personalizados (icons y colores). Si faltan recursos al linkear, revisa `app/src/main/res/drawable/` y `values/colors.xml`.
+
+
+## Contacto / Créditos
+
+- Autor (este README): GitHub Copilot
+- Código original / autores del proyecto: Sergio Cubelli, Victor Manzano
+
+
+## Licencia
+
+Este proyecto se publica bajo la licencia MIT.
+
+---
+
+Notas finales
+
+Este README está pensado para ser una guía práctica y enfocada en los módulos `depto*` que se están manteniendo. Si quieres más documentación (diagramas de flujo, tests unitarios o scripts de despliegue), puedo generarlos aparte como siguientes pasos.

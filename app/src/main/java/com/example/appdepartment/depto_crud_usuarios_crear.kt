@@ -169,9 +169,13 @@ class depto_crud_usuarios_crear : AppCompatActivity() {
     ) {
         val url = "http://54.89.22.17/crear_usuario.php"
 
+        println("📤 Registrando usuario: $nombre - Depto: $idDeptoSeleccionado - Rol: $rol")
+
         val request = object : StringRequest(
             Method.POST, url,
             apply@{ response ->
+                println("📥 Respuesta del servidor: $response")
+
                 val json = JSONObject(response)
 
                 if (json.has("error")) {
@@ -182,9 +186,15 @@ class depto_crud_usuarios_crear : AppCompatActivity() {
                 SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE)
                     .setTitleText("Usuario creado")
                     .setContentText("El usuario fue registrado correctamente")
+                    .setConfirmClickListener {
+                        it.dismissWithAnimation()
+                        // Volver a la lista de usuarios
+                        finish()
+                    }
                     .show()
             },
-            {
+            { error ->
+                println("❌ Error de conexión: ${error.message}")
                 alerta("Error de conexión", "No se pudo contactar al servidor.")
             }
         ) {
@@ -197,6 +207,9 @@ class depto_crud_usuarios_crear : AppCompatActivity() {
                 p["password"] = password
                 p["rol"] = rol
                 p["id_departamento"] = idDeptoSeleccionado.toString()
+                p["estado"] = "ACTIVO" // Asegurar que se cree como ACTIVO
+
+                println("📋 Parámetros enviados: $p")
                 return p
             }
         }
