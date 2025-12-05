@@ -1,6 +1,4 @@
-# AppDepartment — Módulos `depto*` (ProyectoIndoor)
-
-> Documentación enfocada exclusivamente en las pantallas y lógicas `depto*` del proyecto.
+# AppDepartment — Módulos Depto
 
 ---
 
@@ -69,76 +67,87 @@ Extraídas de `app/build.gradle.kts` y uso en código `depto*`:
 - `com.airbnb.android:lottie:6.7.0` — animaciones Lottie (presente en build.gradle).
 - AndroidX (core-ktx, appcompat, material, activity, constraintlayout, cardview).
 
+# IOt-Cuarta-Eva 🚀
 
-## Endpoints detectados
+![Project Logo](app/src/main/res/mipmap/ic_launcher.png)
 
-> Observación: varios endpoints usan HTTP sin cifrar (http://). Revisar seguridad antes de usar en producción.
+[![Build](https://img.shields.io/badge/build-gradle-brightgreen)](https://gradle.org) [![Kotlin](https://img.shields.io/badge/kotlin-2.0.21-blue)](https://kotlinlang.org) [![Android SDK](https://img.shields.io/badge/Android%20SDK-36-yellow)]() [![Status](https://img.shields.io/badge/status-development-orange)]
 
-- POST http://54.89.22.17/login.php — login (params: `email`, `password`). Respuesta: JSON con `rol`, `id_usuario`, `id_departamento`, `nombre`.
-- GET http://54.89.22.17/listar_departamentos.php — lista de departamentos.
-- POST http://54.89.22.17/registrar_sensor.php — registrar sensor (`codigo_sensor`, `tipo`, `id_usuario`, `id_departamento`, `estado`, `fecha_alta`).
-- GET http://54.89.22.17/listar_sensores.php?id_departamento=... — listar sensores por departamento.
-- POST http://54.89.22.17/eliminar_sensor.php — eliminar sensor (`id_sensor`).
-- POST http://34.206.129.152/actualizar_sensor.php — actualizar sensor (incluye `fecha_baja` opcional).
-- POST http://54.89.22.17/crear_usuario.php — crear usuario (nombre, rut, email, telefono, password, rol, id_departamento).
-- Otros: `apiconsultausu.php`, `consulta.php`, `listar_usuarios_depto.php` (uso en listados y autenticación).
+✨ Descripción
 
+- Aplicación Android (Kotlin) para gestión de departamentos, sensores y usuarios. Incluye flujos de autenticación por rol (ADMIN / OPERADOR), CRUD de sensores y usuarios, listados y registro de accesos.
 
-## Requisitos y configuración
+🔎 Características principales
 
-- JDK 11 (project usa Java 11 y `kotlinOptions.jvmTarget = "11"`).
-- Android SDK (API 36) — `compileSdk = 36`, `targetSdk = 36`.
-- `minSdk = 24`.
-- Android Gradle Plugin 8.13.1, Kotlin 2.0.21 (ver `gradle/libs.versions.toml`).
-- Permisos importantes en `AndroidManifest.xml`: `INTERNET`, `CAMERA`.
-- `depto_login` está registrado como activity lanzadora (launcher).
+- Login con persistencia de sesión (SharedPreferences).
+- Panel administrativo para CRUD de sensores y usuarios.
+- Registro y edición de sensores (asignación por departamento/usuario).
+- Listados con búsqueda y control de accesos.
+- Presentaciones y diálogos enriquecidos (Lottie + SweetAlert).
 
+📁 Estructura clave
 
-## Cómo compilar y ejecutar (rápido)
+- Código: `app/src/main/java/` (activities y clases, muchas con prefijo `depto_*`).
+- Layouts: `app/src/main/res/layout/` (layouts `activity_depto_*.xml`).
+- Manifest: `app/src/main/AndroidManifest.xml` (permisos: `INTERNET`, `CAMERA`).
+- Build: `app/build.gradle.kts` y `gradle/libs.versions.toml`.
 
-1. Instala JDK 11 y configura Android SDK (API 36).
-2. Desde la raíz del proyecto:
+⚙️ Requisitos
+
+- JDK 11
+- Android SDK (API 36)
+- `minSdk = 24`, `targetSdk = 36`
+
+💻 Cómo compilar (rápido)
+
+Desde la raíz del proyecto:
 
 ```bash
 chmod +x ./gradlew
 ./gradlew clean assembleDebug
 ```
 
-3. APK generado:
-
-```
-app/build/outputs/apk/debug/app-debug.apk
-```
-
-4. Para instalar en un dispositivo/emulador conectado:
+Instalar APK en dispositivo/emulador conectado:
 
 ```bash
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
+🔐 Notas de seguridad
 
-## Notas de seguridad y recomendaciones
+- Atención: el proyecto usa `android:usesCleartextTraffic="true"` y varios endpoints descubiertos usan HTTP (no cifrado). Migrar a HTTPS antes de producción.
+- Revisa almacenamiento de credenciales en `SharedPreferences` y política de expiración/renovación de sesión.
+- `switches.kt` y otros módulos realizan polling frecuente; considerar WebSockets o reducción de frecuencia.
 
-- Transportes: migrar todos los endpoints a HTTPS antes de producción.
-- Polling: `switches.kt` realiza peticiones cada segundo; considerar WebSockets o reducir frecuencia.
-- Sesión: la app guarda `id_usuario`, `id_departamento`, `rol`, `nombre` en `SharedPreferences`.
-- Validaciones: `depto_crud_usuarios_crear.kt` valida RUT y teléfono (`+569...`) — ajusta si cambian reglas.
-- APIs deprecadas: existen usos de `startActivityForResult` en código legado; migrar a Activity Result API.
+🌐 Endpoints detectados (ejemplos)
 
+- POST http://54.89.22.17/login.php — Login (email, password). Respuesta JSON con `rol`, `id_usuario`, `id_departamento`, `nombre`.
+- GET http://54.89.22.17/listar_departamentos.php
+- POST http://54.89.22.17/registrar_sensor.php
+- GET http://54.89.22.17/listar_sensores.php?id_departamento=...
+- POST http://54.89.22.17/eliminar_sensor.php
 
-## Estructura de archivos (rutas clave)
+⚠️ Estos endpoints fueron detectados en el código; aparecen como llamadas HTTP en varias Activities.
 
-- `app/src/main/java/com/example/proyectoindoor/depto_*.kt`
-- `app/src/main/res/layout/activity_depto_*.xml`
-- `app/build.gradle.kts`
-- `gradle/libs.versions.toml`
-- `app/src/main/AndroidManifest.xml`
+🧭 Mapeo rápido de Activities (ruta: `app/src/main/java/com/example/proyectoindoor`)
 
+- `depto_login.kt` — Login (launcher)
+- `depto_gestion_adm.kt` — Menú admin
+- `depto_crud_sensores*.kt` — Flujos de gestión de sensores
+- `depto_crud_usuarios*.kt` — Flujos de gestión de usuarios
+- `depto_control_listado*.kt` — Listados y controles
+- `depto_usuario_historial.kt` — Historial de accesos
 
----
+🧩 Dependencias destacadas
 
-## Autor
+- `com.android.volley:volley:1.2.1`
+- `com.github.f0ris.sweetalert:library:1.6.2`
+- `com.airbnb.android:lottie:6.7.0`
+- AndroidX (core-ktx, appcompat, material, activity, constraintlayout, cardview)
 
-Sergio Cubelli
-Victor Manzano
+✍️ Autores / Créditos
+
+- Sergio Cubelli (Sergio el Nazer)
+- Victor Manzano (Victor el Nazi)
+
 
