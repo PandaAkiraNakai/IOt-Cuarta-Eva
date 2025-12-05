@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">AppDepartment</string>
+    <string-array name="tipo_rfid_array">
+        <item>TARJETA</item>
+        <item>LLAVERO</item>
+        <item>DIGITAL</item>
+    </string-array>
+
+</resources>

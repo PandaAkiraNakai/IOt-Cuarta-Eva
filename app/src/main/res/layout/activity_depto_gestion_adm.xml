@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_dark"
+    android:padding="24dp"
+    tools:context=".depto_gestion_adm">
+
+    <ImageView
+        android:id="@+id/imageView14"
+        android:layout_width="160dp"
+        android:layout_height="140dp"
+        android:layout_marginTop="32dp"
+        android:elevation="6dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/logomaria" />
+
+    <TextView
+        android:id="@+id/tv_menu_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="Panel de Gestión Administrativa"
+        android:textAlignment="center"
+        android:textColor="@color/text_light"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView14" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        app:cardBackgroundColor="@color/card_background"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_menu_title"
+        app:layout_constraintWidth_percent="0.95">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="32dp">
+
+            <Button
+                android:id="@+id/btn_Crudrfid"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:backgroundTint="@color/primary_dark"
+                android:elevation="6dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="Gestión de Sensores"
+                android:textColor="@color/button_text"
+                android:textSize="20sp"
+                app:cornerRadius="16dp"
+                app:icon="@drawable/sensor_icon"
+                app:iconGravity="textStart"
+                app:iconPadding="16dp"
+                app:iconSize="32dp"
+                app:iconTint="@color/button_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/btn_CrudUsuariosiot"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="@color/success"
+                android:elevation="6dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="Gestión de Usuarios"
+                android:textColor="@color/button_text"
+                android:textSize="20sp"
+                app:cornerRadius="16dp"
+                app:icon="@drawable/users_icon"
+                app:iconGravity="textStart"
+                app:iconPadding="16dp"
+                app:iconSize="32dp"
+                app:iconTint="@color/button_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btn_Crudrfid" />
+
+            <Button
+                android:id="@+id/btn_historial_accesos"
+                android:layout_width="0dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="@color/warning"
+                android:elevation="6dp"
+                android:fontFamily="sans-serif-medium"
+                android:text="Control de Acceso Manual"
+                android:textColor="@color/button_text_dark"
+                android:textSize="20sp"
+                app:cornerRadius="16dp"
+                app:icon="@drawable/key_icon"
+                app:iconGravity="textStart"
+                app:iconPadding="16dp"
+                app:iconSize="32dp"
+                app:iconTint="@color/button_text_dark"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btn_CrudUsuariosiot" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

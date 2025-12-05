@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature
+        android:name="android.hardware.camera.flash"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.ProyectoIndoor"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".depto_usuarios_modificar_usu"
+            android:exported="false" />
+        <activity
+            android:name=".depto_crud_usuarios_modificar"
+            android:exported="false" />
+        <activity
+            android:name=".depto_usuario_historial"
+            android:exported="false" />
+        <activity
+            android:name=".depto_usuario_bienvenida"
+            android:exported="false" />
+        <activity
+            android:name=".depto_control_listado_acceso"
+            android:exported="false" />
+        <activity
+            android:name=".depto_control_listado_acceso_readonly"
+            android:exported="false" />
+        <activity
+            android:name=".depto_control_listado"
+            android:exported="false" />
+        <activity
+            android:name=".depto_crud_usuarios_crear"
+            android:exported="false" />
+        <activity
+            android:name=".depto_crud_usuarios"
+            android:exported="false" />
+        <activity
+            android:name=".depto_crud_sensores_estado_modificar"
+            android:exported="false" />
+        <activity
+            android:name=".depto_crud_sensores_registro"
+            android:exported="false" />
+        <activity
+            android:name=".depto_gestion_adm"
+            android:exported="false" />
+        <activity
+            android:name=".depto_control_acceso"
+            android:exported="false" />
+        <activity
+            android:name=".depto_crud_sensores"
+            android:exported="false" />
+        <activity
+            android:name=".depto_crud_sensores_estado"
+            android:exported="false" />
+        <activity
+            android:name=".depto_login"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:padding="24dp"
+    tools:context=".depto_crud_sensores">
+
+    <ImageView
+        android:id="@+id/imageView19"
+        android:layout_width="180dp"
+        android:layout_height="160dp"
+        android:layout_marginTop="32dp"
+        android:elevation="6dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/logomaria" />
+
+    <TextView
+        android:id="@+id/gestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:elevation="2dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="Gestión de Sensores"
+        android:textAlignment="center"
+        android:textColor="@color/primary"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView19" />
+
+    <Button
+        android:id="@+id/btn_RegistrarRfid"
+        android:layout_width="0dp"
+        android:layout_height="76dp"
+        android:layout_marginTop="40dp"
+        android:backgroundTint="@color/button_primary"
+        android:elevation="6dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="Registrar Sensor"
+        android:textColor="@color/button_text"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:cornerRadius="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/gestion"
+        app:layout_constraintWidth_percent="0.85" />
+
+    <Button
+        android:id="@+id/btn_cambiar_estados"
+        android:layout_width="0dp"
+        android:layout_height="76dp"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@color/button_secondary"
+        android:elevation="6dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="Modificar Sensor"
+        android:textColor="@color/button_text"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:cornerRadius="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_RegistrarRfid"
+        app:layout_constraintWidth_percent="0.85" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
